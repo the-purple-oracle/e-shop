@@ -81,7 +81,7 @@ const ProductContainer = (props) => {
   };
 
   return (
-    <View>
+    <View style={{ flex: 1, backgroundColor: 'gainsboro' }}>
       <View>
         <SearchHeader
           onFocus={openList}
@@ -92,7 +92,10 @@ const ProductContainer = (props) => {
       </View>
 
       {focus == true ? (
-        <SearchedProducts productsFiltered={productsFiltered} />
+        <SearchedProducts
+          navigation={props.navigation}
+          productsFiltered={productsFiltered}
+        />
       ) : (
         <ScrollView>
           <View style={styles.container}>

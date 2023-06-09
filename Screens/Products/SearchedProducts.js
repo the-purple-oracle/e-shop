@@ -7,9 +7,17 @@ var { width } = Dimensions.get('window');
 const SearchedProducts = (props) => {
   const { productsFiltered } = props;
   return (
-    <View style={[styles.container]}>
+    <View>
       {productsFiltered.length > 0 ? (
-        productsFiltered.map((item, i) => <ListItem key={i} item={item} />)
+        productsFiltered.map((item, i) => (
+          <ListItem
+            key={item._id.$oid}
+            item={item}
+            navigation={() => {
+              props.navigation.navigate('Product Detail', { item: item });
+            }}
+          />
+        ))
       ) : (
         <View style={styles.center}>
           <Text style={{ alignSelf: 'center' }}>
@@ -22,10 +30,6 @@ const SearchedProducts = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: width,
-  },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
