@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker as P } from '@reacrt-native-picker/picker';
 import Icon from 'react-native-vector-icons';
 import FormContainer from '../../../Shared/Form/FormContainer';
 import Input from '../../../Shared/Form/Input';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import RNPickerSelect from 'react-native-picker-select';
 import { connect } from 'react-redux';
 
 const countries = require('../../../assets/countries.json');
@@ -75,26 +75,30 @@ const Checkout = (props) => {
           keyboardType={'numeric'}
           onChangeText={(text) => setZip(text)}
         />
-
-        <Picker
-          mode={'dialog'}
-          selectedValue={selectedCountry}
-          onValueChange={(itemValue, itemIndex) => {
-            setCountry(itemValue);
-            setSelectedCountry(itemValue);
-          }}
-        >
-          {countries.map((c, i) => (
-            <Picker.Item key={i} label={c.name} value={c.code} />
-          ))}
-        </Picker>
+        <View style={styles.picker}>
+          <RNPickerSelect
+            placeholder={{ label: 'Select a country', value: null }}
+            onValueChange={(value) => setCountry(value)}
+            items={countries}
+          />
+        </View>
       </FormContainer>
     </KeyboardAwareScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  picker: {},
+  picker: {
+    width: '80%',
+    margin: 10,
+    height: 60,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderWidth: 2,
+    borderRadius: 20,
+    borderColor: 'orange',
+  },
 });
 
 export default Checkout;
