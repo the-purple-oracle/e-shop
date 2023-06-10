@@ -23,12 +23,26 @@ const Checkout = (props) => {
 
   useEffect(() => {
     setOrderItems(props.cartItems);
-    setSelectedCountry(countries[229]);
     return () => {
       setOrderItems();
-      setSelectedCountry();
     };
   }, []);
+
+  const checkOut = () => {
+    let order = {
+      city,
+      country,
+      dateOrdered: Date.now(),
+      orderItems,
+      phone,
+      state,
+      shippingAddress1: address,
+      shippingAddress2: address2,
+      zip,
+    };
+
+    props.navigation.navigate('Payment', { order: order });
+  };
 
   return (
     <KeyboardAwareScrollView
@@ -36,7 +50,7 @@ const Checkout = (props) => {
       extraHeight={200}
       enableOnAndroid={true}
     >
-      <FormContainer title={'Shipping Address'}>
+      <FormContainer title={'Shipping Details'}>
         <Input
           placeholder={'Phone'}
           name={'phone'}
@@ -82,9 +96,20 @@ const Checkout = (props) => {
             items={countries}
           />
         </View>
+        <View style={{ width: '80%', alignItems: 'center' }}>
+          <Button title={'Submit'} onPress={() => checkOut()} />
+        </View>
       </FormContainer>
     </KeyboardAwareScrollView>
   );
+};
+
+const mapStateToProps = (state) => {
+  const { cartItems } = state;
+
+  return {
+    cartItems: cartItems,
+  };
 };
 
 const styles = StyleSheet.create({
@@ -101,4 +126,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Checkout;
+export default connect(mapStateToProps)(Checkout);
