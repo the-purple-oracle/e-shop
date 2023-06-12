@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from 'react';
+import React, { useState, useCallback, Component } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,6 +10,7 @@ import {
   Button,
   ScrollView,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { Icon } from 'react-native-elements';
 
 import ProductList from './ProductList';
@@ -19,8 +20,9 @@ import SearchHeader from '../../Components/SearchHeader';
 import Banner from '../../Shared/Banner';
 import CategoryFilter from './CategoryFilter';
 
-const data = require('../../assets/data/products.json');
-const productsCategories = require('../../assets/data/categories.json');
+import baseURL from '../../assets/common/baseUrl';
+import axios from 'axios';
+
 var { width } = Dimensions.get('window');
 var { height } = Dimensions.get('window');
 
@@ -32,25 +34,41 @@ const ProductContainer = (props) => {
   const [productsCtg, setProductsCtg] = useState([]);
   const [active, setActive] = useState();
   const [initialState, setInitialState] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    setProducts(data);
-    setProductsFiltered(data);
-    setFocus(false);
-    setCategories(productsCategories);
-    setProductsCtg(data);
-    setActive(-1);
-    setInitialState(data);
+  useFocusEffect(
+    useCallback(() => {
+      setFocus(false);
+      setActive(-1);
+      // get products
+      axios
+        .get(`${baseURL}products`)
+        .then((res) => {
+          setProducts(res.data);
+          setProductsFiltered(res.data);
+          setProductsCtg(res.data);
+          setInitialState(res.data);
+          setLoading(false);
+        })
+        .catch((err) => console.info(err));
 
-    return () => {
-      setProducts([]);
-      setProductsFiltered([]);
-      setFocus();
-      setCategories([]);
-      setActive();
-      setInitialState([]);
-    };
-  }, []);
+      //get categories
+      axios
+        .get(`${baseURL}categories`)
+        .then((res) => {
+          setCategories(res.data);
+        })
+        .catch((err) => console.log(err));
+      return () => {
+        setProducts([]);
+        setProductsFiltered([]);
+        setFocus();
+        setCategories([]);
+        setActive();
+        setInitialState([]);
+      };
+    }, [])
+  );
 
   const searchProduct = (text) => {
     setProductsFiltered(
@@ -73,7 +91,7 @@ const ProductContainer = (props) => {
         ? [setProductsCtg(initialState), setActive(true)]
         : [
             setProductsCtg(
-              products.filter((i) => i.category.$oid === ctg),
+              products.filter((i) => i.category._id === ctg),
               setActive(true)
             ),
           ];
@@ -81,57 +99,65 @@ const ProductContainer = (props) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'gainsboro' }}>
-      <View>
-        <SearchHeader
-          onFocus={openList}
-          onChangeText={(text) => searchProduct(text)}
-          onBlur={onBlur}
-          focus={focus}
-        />
-      </View>
-
-      {focus == true ? (
-        <SearchedProducts
-          navigation={props.navigation}
-          productsFiltered={productsFiltered}
-        />
-      ) : (
-        <ScrollView>
-          <View style={styles.container}>
-            <View>
-              <Banner />
-            </View>
-            <View>
-              <CategoryFilter
-                categories={categories}
-                categoryFilter={changeCtg}
-                productsCtg={productsCtg}
-                active={active}
-                setActive={setActive}
-              />
-            </View>
-            {productsCtg.length > 0 ? (
-              <View style={styles.listContainer}>
-                {productsCtg.map((item) => {
-                  return (
-                    <ProductList
-                      navigation={props.navigation}
-                      key={item._id.$oid}
-                      item={item}
-                    />
-                  );
-                })}
-              </View>
-            ) : (
-              <View style={[styles.center, { height: height / 2 }]}>
-                <Text>No Products Found</Text>
-              </View>
-            )}
+    <>
+      {loading === false ? (
+        <View style={{ flex: 1, backgroundColor: 'white' }}>
+          <View>
+            <SearchHeader
+              onFocus={openList}
+              onChangeText={(text) => searchProduct(text)}
+              onBlur={onBlur}
+              focus={focus}
+            />
           </View>
-        </ScrollView>
+
+          {focus == true ? (
+            <SearchedProducts
+              navigation={props.navigation}
+              productsFiltered={productsFiltered}
+            />
+          ) : (
+            <ScrollView>
+              <View style={styles.container}>
+                <View>
+                  <Banner />
+                </View>
+                <View>
+                  <CategoryFilter
+                    categories={categories}
+                    categoryFilter={changeCtg}
+                    productsCtg={productsCtg}
+                    active={active}
+                    setActive={setActive}
+                  />
+                </View>
+                {productsCtg.length > 0 ? (
+                  <View style={styles.listContainer}>
+                    {productsCtg.map((item, i) => {
+                      return (
+                        <ProductList
+                          navigation={props.navigation}
+                          key={i}
+                          item={item}
+                        />
+                      );
+                    })}
+                  </View>
+                ) : (
+                  <View style={[styles.center, { height: height / 2 }]}>
+                    <Text>No Products Found</Text>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          )}
+        </View>
+      ) : (
+        <View style={styles.loading}>
+          <ActivityIndicator size={'large'} />
+        </View>
       )}
-    </View>
+    </>
   );
 };
 
@@ -151,6 +177,10 @@ const styles = StyleSheet.create({
   center: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });
 

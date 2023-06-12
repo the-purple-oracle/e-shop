@@ -5,16 +5,23 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import CartIcon from '../Shared/CartIcon';
 import HomeNavigator from './HomeNavigator';
 import CartNavigator from './CartNavigator';
+import UserNavigator from './UserNavigator';
 const Tab = createBottomTabNavigator();
 
 const Main = () => {
   return (
     <Tab.Navigator
       initialRouteName='Home'
-      tabBarOptions={{
-        keyboardHidesTabBar: true,
-        showLabel: false,
-        activeTintColor: '#e91e63',
+      screenOptions={{
+        tabBarHideOnKeyboard: true,
+        tabBarActiveTintColor: '#e91e63',
+        tabBarShowLabel: false,
+        tabBarStyle: [
+          {
+            display: 'flex',
+          },
+          null,
+        ],
       }}
     >
       <Tab.Screen
@@ -55,7 +62,7 @@ const Main = () => {
       />
       <Tab.Screen
         name='User'
-        component={HomeNavigator}
+        component={UserNavigator}
         options={{
           tabBarIcon: ({ color }) => (
             <Icon name='user' color={color} size={30} />
