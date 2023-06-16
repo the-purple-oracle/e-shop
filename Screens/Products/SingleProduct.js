@@ -11,12 +11,33 @@ import {
 import Toast from 'react-native-toast-message';
 import { connect } from 'react-redux';
 import * as actions from '../../Redux/Actions/cartActions';
+import StyledButton from '../../Shared/StyledComponents/StyledButton';
+import TrafficLight from '../../Shared/StyledComponents/TrafficLight';
 
 var { width } = Dimensions.get('window');
 
 const SingleProduct = (props) => {
   const [item, setItem] = useState(props.route.params.item);
   const [availability, setAvailability] = useState(null);
+  const [availabilityText, setAvailabilityText] = useState('');
+
+  useEffect(() => {
+    if (props.route.params.item.countInStock == 0) {
+      setAvailability(<TrafficLight unavailable></TrafficLight>);
+      setAvailabilityText('Unavailable');
+    } else if (props.route.params.item.countInStock <= 5) {
+      setAvailability(<TrafficLight limited></TrafficLight>);
+      setAvailabilityText('Limited Stock');
+    } else {
+      setAvailability(<TrafficLight available></TrafficLight>);
+      setAvailabilityText('In Stock');
+    }
+
+    return () => {
+      setAvailability(null);
+      setAvailabilityText('');
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -36,7 +57,15 @@ const SingleProduct = (props) => {
           <Text style={styles.contentHeader}>{item.name}</Text>
           <Text style={styles.contentText}>{item.brand}</Text>
         </View>
-        {/* Todo: description, RichDescription, availability */}
+        <View style={styles.availabilityContainer}>
+          <View style={styles.availability}>
+            <Text style={{ marginRight: 10 }}>
+              Availability : {availabilityText}
+            </Text>
+            {availability}
+          </View>
+          <Text>{item.description}</Text>
+        </View>
       </ScrollView>
       <View style={styles.bottomContainer}>
         <View>
@@ -44,8 +73,9 @@ const SingleProduct = (props) => {
         </View>
 
         <View style={styles.right}>
-          <Button
-            title='Add To Cart'
+          <StyledButton
+            large
+            primary
             onPress={() => {
               props.addItemToCart(item),
                 Toast.show({
@@ -55,7 +85,9 @@ const SingleProduct = (props) => {
                   text2: 'Go to your cart to complete order',
                 });
             }}
-          />
+          >
+            <Text style={styles.btnText}>Add To Cart</Text>
+          </StyledButton>
         </View>
       </View>
     </View>
@@ -115,6 +147,18 @@ const styles = StyleSheet.create({
   right: {
     alignSelf: 'center',
     right: 0,
+  },
+  btnText: {
+    alignSelf: 'center',
+    color: 'white',
+  },
+  availabilityContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  availability: {
+    flexDirection: 'row',
+    marginBottom: 10,
   },
 });
 

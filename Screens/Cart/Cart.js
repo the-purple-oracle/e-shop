@@ -12,6 +12,7 @@ import {
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CartItem from './CartItem';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import StyledButton from '../../Shared/StyledComponents/StyledButton';
 
 import { connect } from 'react-redux';
 import * as actions from '../../Redux/Actions/cartActions';
@@ -54,13 +55,18 @@ const Cart = (props) => {
               <Text style={styles.price}>${total}</Text>
             </View>
             <View style={styles.right}>
-              <Button title='Clear' onPress={() => props.clearCart()} />
+              <StyledButton large danger onPress={() => props.clearCart()}>
+                <Text style={styles.btnText}>Clear</Text>
+              </StyledButton>
             </View>
             <View>
-              <Button
-                title='Checkout'
+              <StyledButton
+                large
+                primary
                 onPress={() => props.navigation.navigate('Checkout')}
-              />
+              >
+                <Text style={styles.btnText}>Checkout</Text>
+              </StyledButton>
             </View>
           </View>
         </View>
@@ -127,6 +133,11 @@ styles = StyleSheet.create({
     paddingRight: 25,
     height: 70,
     width: width / 1.2,
+  },
+  btnText: {
+    alignSelf: 'center',
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 

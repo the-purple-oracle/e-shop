@@ -101,7 +101,7 @@ const ProductContainer = (props) => {
   return (
     <>
       {loading === false ? (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={[styles.container, { backgroundColor: 'white' }]}>
           <View>
             <SearchHeader
               onFocus={openList}
@@ -118,7 +118,7 @@ const ProductContainer = (props) => {
             />
           ) : (
             <ScrollView>
-              <View style={styles.container}>
+              <View>
                 <View>
                   <Banner />
                 </View>
@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'gainsboro',
   },
   listContainer: {
-    height: height,
     flex: 1,
     flexDirection: 'row',
     alignItems: 'flex-start',

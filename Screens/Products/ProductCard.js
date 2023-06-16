@@ -10,6 +10,7 @@ import {
 import Toast from 'react-native-toast-message';
 import { connect } from 'react-redux';
 import * as actions from '../../Redux/Actions/cartActions';
+import StyledButton from '../../Shared/StyledComponents/StyledButton';
 
 var { width } = Dimensions.get('window');
 
@@ -29,14 +30,14 @@ const ProductCard = (props) => {
       />
       <View style={styles.card} />
       <Text style={styles.title}>
-        {name.length > 15 ? name.substring(0, 15 - 3) + '...' : name}
+        {name.length > 13 ? name.substring(0, 13 - 3) + '...' : name}
       </Text>
       <Text style={styles.price}>${price}</Text>
       {countInStock > 0 ? (
         <View style={{ marginBottom: 60 }}>
-          <Button
-            title={'Add'}
-            color={'green'}
+          <StyledButton
+            medium
+            primary
             onPress={() => {
               props.addItemToCart(props),
                 Toast.show({
@@ -46,7 +47,9 @@ const ProductCard = (props) => {
                   text2: 'Go to your cart to complete order',
                 });
             }}
-          />
+          >
+            <Text style={styles.btnText}>Add</Text>
+          </StyledButton>
         </View>
       ) : (
         <Text style={{ marginTop: 20 }}>Currently Out Of Stock</Text>
@@ -97,6 +100,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: 'orange',
     marginTop: 10,
+  },
+  btnText: {
+    alignSelf: 'center',
+    color: 'white',
   },
 });
 

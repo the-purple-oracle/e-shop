@@ -14,7 +14,9 @@ const ListItem = (props) => {
   return (
     <TouchableOpacity onPress={props.navigation}>
       <View style={styles.container}>
-        <Text>{item.name}</Text>
+        <Text numberOfLines={1} ellipsizeMode='tail'>
+          {item.name}
+        </Text>
         <Image
           style={styles.image}
           source={{

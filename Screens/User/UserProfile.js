@@ -20,15 +20,18 @@ const UserProfile = (props) => {
     ) {
       props.navigation.navigate('Login');
     }
-    AsyncStorage.getItem('jwt')
-      .then((res) => {
-        axios
-          .get(`${baseURL}users/${context.stateUser.user.userId}`, {
-            headers: { Authorization: `Bearer ${res}` },
-          })
-          .then((user) => setUserProfile(user.data));
-      })
-      .catch((error) => console.log(error));
+
+    if (context.stateUser.isAuthenticated) {
+      AsyncStorage.getItem('jwt')
+        .then((res) => {
+          axios
+            .get(`${baseURL}users/${context.stateUser.user.userId}`, {
+              headers: { Authorization: `Bearer ${res}` },
+            })
+            .then((user) => setUserProfile(user.data));
+        })
+        .catch((error) => console.log(error));
+    }
 
     return () => {
       setUserProfile();
@@ -36,13 +39,13 @@ const UserProfile = (props) => {
   }, [context.stateUser.isAuthenticated]);
 
   const handleSignOut = () => {
+    AsyncStorage.removeItem('jwt');
     logoutUser(context.dispatch);
-    props.navigation.navigate('Login');
   };
 
   return (
-    <View>
-      <ScrollView>
+    <View style={styles.container}>
+      <ScrollView contentContainerStyle={styles.subContainer}>
         <Text style={{ fontSize: 30 }}>
           {userProfile ? userProfile.name : ''}
         </Text>
@@ -64,4 +67,14 @@ const UserProfile = (props) => {
   );
 };
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    marginTop: 60,
+  },
+  subContainer: {
+    alignItems: 'center',
+  },
+});
 export default UserProfile;

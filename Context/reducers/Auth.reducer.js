@@ -6,17 +6,15 @@ export default function (state, action) {
     case SET_CURRENT_USER:
       return {
         ...state,
-        // isAuthenticated: true,
         isAuthenticated: !isEmpty(action.payload),
         user: action.payload,
         userProfile: action.userProfile,
       };
 
     case LOGOUT_USER: {
-      console.log('in loggin out user');
       return {
         ...state,
-        stateUser: null,
+        //stateUser: null,
         isAuthenticated: false,
         user: null,
         userProfile: null,

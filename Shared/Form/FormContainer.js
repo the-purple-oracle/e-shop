@@ -15,10 +15,10 @@ const FormContainer = (props) => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 30,
-
     width: width,
     justifyContent: 'center',
     alignItems: 'center',
+    paddingBottom: 60,
   },
   title: {
     fontSize: 30,

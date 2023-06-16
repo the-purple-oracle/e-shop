@@ -53,7 +53,7 @@ export const getUserProfile = (id) => {
 
 export const logoutUser = (dispatch) => {
   dispatch(LOGOUT_USER);
-  dispatch(setCurrentUser(null, null));
+  dispatch(setCurrentUser('', {}));
   AsyncStorage.removeItem('jwt');
 };
 

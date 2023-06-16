@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Button } from 'react-native';
 import FormContainer from '../../Shared/Form/FormContainer';
 import Input from '../../Shared/Form/Input';
 import Error from '../../Shared/Error';
-
+import StyledButton from '../../Shared/StyledComponents/StyledButton';
 //Context
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import { loginUser } from '../../Context/actions/Auth.actions';
@@ -51,14 +51,19 @@ const Login = (props) => {
       />
       <View style={styles.buttonGroup}>
         {error ? <Error message={error} /> : null}
-        <Button title='Login' onPress={() => handleSubmit()} />
+        <StyledButton large primary onPress={() => handleSubmit()}>
+          <Text style={styles.btnText}>Login</Text>
+        </StyledButton>
       </View>
       <View style={[{ marginTop: 40 }, styles.buttonGroup]}>
         <Text style={styles.middleText}>Don't have an account yet?</Text>
-        <Button
-          title='Register'
+        <StyledButton
+          large
+          secondary
           onPress={() => props.navigation.navigate('Register')}
-        />
+        >
+          <Text style={styles.btnText}>Register</Text>
+        </StyledButton>
       </View>
     </FormContainer>
   );
@@ -72,6 +77,11 @@ const styles = StyleSheet.create({
   middleText: {
     marginBottom: 20,
     alignSelf: 'center',
+  },
+  btnText: {
+    alignSelf: 'center',
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
