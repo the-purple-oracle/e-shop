@@ -28,7 +28,7 @@ const ProductForm = (props) => {
   const [description, setDescription] = useState('');
   const [richDescription, setRichDescription] = useState('');
   const [image, setImage] = useState();
-  const [mainImage, setMainImage] = useState();
+  const [mainImage, setMainImage] = useState('');
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [token, setToken] = useState();
@@ -38,9 +38,23 @@ const ProductForm = (props) => {
   const [isFeatured, setIsFeatured] = useState(false);
   const [numReviews, setNumReviews] = useState(0);
   const [item, setItem] = useState(null);
-  const [b64, setB64] = useState('');
+  const [baseImage, setBaseImage] = useState();
 
   useEffect(() => {
+    if (!props.route.params) {
+      setItem(null);
+    } else {
+      setItem(props.route.params.item);
+      setBrand(props.route.params.item.brand);
+      setName(props.route.params.item.name);
+      setPrice(props.route.params.item.price.toString());
+      setDescription(props.route.params.item.description);
+      setMainImage(props.route.params.item.image);
+      setImage(props.route.params.item.image);
+      setBaseImage(props.route.params.item.image);
+      setCategory(props.route.params.item.category._id);
+      setCountInStock(props.route.params.item.countInStock.toString());
+    }
     AsyncStorage.getItem('jwt')
       .then((res) => {
         setToken(res);
@@ -86,12 +100,15 @@ const ProductForm = (props) => {
     });
 
     if (!result.canceled) {
-      setB64(result.assets[0].base64);
+      setMainImage(result.assets[0].base64);
+      setImage(result.assets[0].base64);
+      setBaseImage(`data:image/png;base64,${mainImage}`);
     }
   };
 
+  //moved to useEffect
   //used for the image source for base65 image
-  var baseImage = `data:image/png;base64,${b64}`;
+  // var baseImage = `data:image/png;base64,${mainImage}`;
 
   const addProduct = () => {
     if (
@@ -130,36 +147,63 @@ const ProductForm = (props) => {
       },
     };
 
-    axios
-      .post(`${baseURL}products/base`, formData, config)
-      .then((res) => {
-        if (res.status == 200 || res.status == 201) {
+    if (item !== null) {
+      axios
+        .put(`${baseURL}products/${item._id}`, formData, config)
+        .then((res) => {
+          if (res.status == 200 || res.status == 201) {
+            Toast.show({
+              topOffset: 60,
+              type: 'success',
+              text1: 'Product successfully updated',
+              text2: '',
+            });
+
+            setTimeout(() => {
+              props.navigation.navigate('Products');
+            }, 500);
+          }
+        })
+        .catch((error) => {
           Toast.show({
             topOffset: 60,
-            type: 'success',
-            text1: 'New Product Added',
-            text2: '',
+            type: 'error',
+            text1: 'Something went wrong',
+            text2: 'Please try again',
           });
-
-          setTimeout(() => {
-            props.navigation.navigate('Products');
-          }, 500);
-        }
-      })
-      .catch((error) => {
-        Toast.show({
-          topOffset: 60,
-          type: 'error',
-          text1: 'Something went wrong',
-          text2: 'Please try again',
         });
-      });
+    } else {
+      axios
+        .post(`${baseURL}products/base`, formData, config)
+        .then((res) => {
+          if (res.status == 200 || res.status == 201) {
+            Toast.show({
+              topOffset: 60,
+              type: 'success',
+              text1: 'New Product Added',
+              text2: '',
+            });
+
+            setTimeout(() => {
+              props.navigation.navigate('Products');
+            }, 500);
+          }
+        })
+        .catch((error) => {
+          Toast.show({
+            topOffset: 60,
+            type: 'error',
+            text1: 'Something went wrong',
+            text2: 'Please try again',
+          });
+        });
+    }
   };
 
   return (
     <FormContainer title='Add Product'>
       <View style={styles.imageContainer}>
-        {b64 && <Image style={styles.image} source={{ uri: baseImage }} />}
+        <Image style={styles.image} source={{ uri: baseImage }} />
         <TouchableOpacity style={styles.imagePicker} onPress={pickImage}>
           <Icon style={{ color: 'white' }} name='camera' />
         </TouchableOpacity>

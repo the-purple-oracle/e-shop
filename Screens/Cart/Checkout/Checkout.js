@@ -38,6 +38,8 @@ const Checkout = (props) => {
       state,
       shippingAddress1: address,
       shippingAddress2: address2,
+      status: '3',
+      // user,
       zip,
     };
 

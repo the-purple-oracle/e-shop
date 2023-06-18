@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,58 +12,99 @@ import { connect } from 'react-redux';
 
 import * as actions from '../../../Redux/Actions/cartActions';
 import { ListItem } from 'react-native-elements';
+import StyledButton from '../../../Shared/StyledComponents/StyledButton';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
+import baseURL from '../../../assets/common/baseUrl';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 var { width, height } = Dimensions.get('window');
 
 const Confirm = (props) => {
-  const confirm = props.route.params;
+  const finalOrder = props.route.params;
+  const [token, setToken] = useState();
+  useEffect(() => {
+    AsyncStorage.getItem('jwt')
+      .then((res) => {
+        setToken(res.data);
+      })
+      .catch((error) => console.log(error));
+
+    return () => {
+      setToken();
+    };
+  }, []);
 
   const confirmOrder = () => {
-    setTimeout(() => {
-      props.clearCart();
-      props.navigation.navigate('Cart');
-    }, 500);
+    const order = finalOrder.order.order;
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    axios
+      .post(`${baseURL}orders`, order, config)
+      .then((res) => {
+        if (res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: 'success',
+            text1: 'Order successfully placed',
+            text2: '',
+          });
+          setTimeout(() => {
+            props.clearCart();
+            props.navigation.navigate('Cart');
+          }, 500);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        Toast.show({
+          topOffset: 60,
+          type: 'error',
+          text1: 'Something went wrong',
+          text2: 'Please try again',
+        });
+      });
   };
   return (
     <ScrollView style={styles.contentContainer}>
       <View style={styles.titleContainer}>
         <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Confirm Order</Text>
-        {confirm ? (
+        {finalOrder ? (
           <View>
             <Text style={styles.title}>Shipping to:</Text>
             <View style={{ padding: 8, marginLeft: 20 }}>
-              <Text>Address: {confirm.order.order.shippingAddress1}</Text>
-              <Text>Address 2: {confirm.order.order.shippingAddress2}</Text>
-              <Text>City: {confirm.order.order.city}</Text>
-              <Text>State: {confirm.order.order.state}</Text>
-              <Text>Zip Code: {confirm.order.order.zip}</Text>
-              <Text>Country: {confirm.order.order.country}</Text>
+              <Text>Address: {finalOrder.order.order.shippingAddress1}</Text>
+              <Text>Address 2: {finalOrder.order.order.shippingAddress2}</Text>
+              <Text>City: {finalOrder.order.order.city}</Text>
+              <Text>State: {finalOrder.order.order.state}</Text>
+              <Text>Zip Code: {finalOrder.order.order.zip}</Text>
+              <Text>Country: {finalOrder.order.order.country}</Text>
             </View>
             <View style={styles.lineBreak}></View>
             <Text style={styles.title}>Items:</Text>
-            {confirm.order.order.orderItems.map((item, i) => {
+            {finalOrder.order.order.orderItems.map((item, i) => {
               return (
                 <ListItem key={i} style={styles.listItem}>
-                  <View
-                    style={{
-                      width: width / 1.2,
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: item.product.image
+                        ? item.product.image
+                        : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
                     }}
-                  >
-                    <Image
-                      style={styles.image}
-                      source={{
-                        uri: item.product.image
-                          ? item.product.image
-                          : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
-                      }}
-                    />
+                  />
 
-                    <View style={styles.body}>
+                  <View View style={styles.body}>
+                    <View style={styles.left}>
                       <Text>{item.product.name}</Text>
                     </View>
-
-                    <Text>${item.product.price}</Text>
+                    <View style={styles.right}>
+                      <Text>${item.product.price}</Text>
+                    </View>
                   </View>
                 </ListItem>
               );
@@ -72,7 +113,17 @@ const Confirm = (props) => {
         ) : null}
         <View style={styles.lineBreak}></View>
         <View style={{ alignItems: 'center', margin: 20 }}>
-          <Button title={'Place Order'} onPress={confirmOrder} />
+          <StyledButton large primary onPress={confirmOrder}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              Confirm
+            </Text>
+          </StyledButton>
         </View>
       </View>
     </ScrollView>
@@ -102,12 +153,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     justifyContent: 'center',
-    width: width / 1.2,
+    width: width,
   },
   body: {
-    margin: 10,
+    flex: 1,
+    marginLeft: 20,
+    justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  left: {
+    justifyContent: 'flex-start',
+  },
+  right: {
+    justifyContent: 'flex-end',
   },
   image: {
     paddingRight: 10,

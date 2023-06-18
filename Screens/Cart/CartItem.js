@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { ListItem } from 'react-native-elements';
 var { width } = Dimensions.get('window');
+
 const CartItem = (props) => {
   const data = props.item.item.product;
   const [quantity, setQuantity] = useState(props.item.item.quantity);
@@ -25,22 +26,27 @@ const CartItem = (props) => {
       />
 
       <View style={styles.body}>
-        <Text>{data.name}</Text>
+        <View style={styles.left}>
+          <Text>{data.name}</Text>
+        </View>
+        <View style={styles.right}>
+          <Text>${data.price}</Text>
+        </View>
       </View>
-
-      <Text>${data.price}</Text>
     </ListItem>
   );
 };
 const styles = StyleSheet.create({
   listItem: {
     width: width,
-    alignItems: 'center',
     backgroundColor: 'white',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
+    position: 'relative',
   },
   body: {
-    margin: 10,
+    flex: 1,
+    marginLeft: 40,
+    justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -53,7 +59,13 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 50,
-    marginLeft: 20,
+    left: 20,
+  },
+  left: {
+    justifyContent: 'flex-start',
+  },
+  right: {
+    justifyContent: 'flex-end',
   },
 });
 export default CartItem;
