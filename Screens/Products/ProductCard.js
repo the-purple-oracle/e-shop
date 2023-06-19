@@ -19,16 +19,17 @@ const ProductCard = (props) => {
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.image}
-        resizeMode='contain'
-        source={{
-          uri: image
-            ? image
-            : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
-        }}
-      />
-      <View style={styles.card} />
+      <View style={styles.card}>
+        <Image
+          style={styles.image}
+          resizeMode='scale'
+          source={{
+            uri: image
+              ? image
+              : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
+          }}
+        />
+      </View>
       <Text style={styles.title}>
         {name.length > 13 ? name.substring(0, 13 - 3) + '...' : name}
       </Text>
@@ -68,7 +69,7 @@ const mapDispatchToProps = (dispatch) => {
 const styles = StyleSheet.create({
   container: {
     width: width / 2 - 20,
-    height: width / 1.7,
+    height: width / 1.2,
     padding: 10,
     borderRadius: 10,
     marginTop: 55,
@@ -80,16 +81,19 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width / 2 - 20 - 10,
-    height: width / 2 - 20 - 30,
+    height: width / 2 - 20 - 10,
+    borderRadius: 10,
     backgroundColor: 'transparent',
     position: 'absolute',
-    top: -45,
+    top: -10,
   },
   card: {
-    marginBottom: 10,
+    position: 'relative',
+    marginBottom: 85,
+    marginTop: 5,
     height: width / 2 - 20 - 90,
     width: width / 2 - 20 - 10,
-    backgroundColor: 'transparent',
+    alignItems: 'center',
   },
   title: {
     fontWeight: 'bold',

@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+
 import {
   View,
   Text,
@@ -17,11 +18,13 @@ import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import baseURL from '../../../assets/common/baseUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import AuthGlobal from '../../../Context/store/AuthGlobal';
 var { width, height } = Dimensions.get('window');
 
 const Confirm = (props) => {
+  const context = useContext(AuthGlobal);
   const finalOrder = props.route.params;
+  const [user, setUser] = useState();
   const [token, setToken] = useState();
   useEffect(() => {
     AsyncStorage.getItem('jwt')
@@ -29,7 +32,7 @@ const Confirm = (props) => {
         setToken(res.data);
       })
       .catch((error) => console.log(error));
-
+    setUser(context.stateUser.user.userId);
     return () => {
       setToken();
     };
@@ -37,6 +40,8 @@ const Confirm = (props) => {
 
   const confirmOrder = () => {
     const order = finalOrder.order.order;
+    order.user = user;
+    console.log(order);
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,

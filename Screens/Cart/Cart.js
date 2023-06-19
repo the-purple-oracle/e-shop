@@ -1,26 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
   Dimensions,
   StyleSheet,
-  Button,
   TouchableOpacity,
-  Image,
-  ScrollView,
 } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import CartItem from './CartItem';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import StyledButton from '../../Shared/StyledComponents/StyledButton';
-
 import { connect } from 'react-redux';
 import * as actions from '../../Redux/Actions/cartActions';
-import { Avatar, ListItem } from 'react-native-elements';
-
+import AuthGlobal from '../../Context/store/AuthGlobal';
 var { width, height } = Dimensions.get('window');
 
 const Cart = (props) => {
+  const context = useContext(AuthGlobal);
   var total = 0;
   props.cartItems.forEach((cart) => {
     return (total += cart.product.price);
@@ -55,18 +51,29 @@ const Cart = (props) => {
               <Text style={styles.price}>${total}</Text>
             </View>
             <View style={styles.right}>
-              <StyledButton large danger onPress={() => props.clearCart()}>
+              <StyledButton medium danger onPress={() => props.clearCart()}>
                 <Text style={styles.btnText}>Clear</Text>
               </StyledButton>
             </View>
             <View>
-              <StyledButton
-                large
-                primary
-                onPress={() => props.navigation.navigate('Checkout')}
-              >
-                <Text style={styles.btnText}>Checkout</Text>
-              </StyledButton>
+              {/* keep if want to make users login to make purchase */}
+              {context.stateUser.isAuthenticated ? (
+                <StyledButton
+                  large
+                  primary
+                  onPress={() => props.navigation.navigate('Checkout')}
+                >
+                  <Text style={styles.btnText}>Checkout</Text>
+                </StyledButton>
+              ) : (
+                <StyledButton
+                  medium
+                  secondary
+                  onPress={() => props.navigation.navigate('Login')}
+                >
+                  <Text style={styles.btnText}>Login</Text>
+                </StyledButton>
+              )}
             </View>
           </View>
         </View>

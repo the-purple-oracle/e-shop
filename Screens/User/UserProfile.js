@@ -9,34 +9,50 @@ import baseURL from '../../assets/common/baseUrl';
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import { logoutUser } from '../../Context/actions/Auth.actions';
 
+import OrderCard from '../../Shared/OrderCard';
+
 const UserProfile = (props) => {
   const context = useContext(AuthGlobal);
   const [userProfile, setUserProfile] = useState();
+  const [orders, setOrders] = useState();
 
-  useEffect(() => {
-    if (
-      context.stateUser.isAuthenticated === false ||
-      context.stateUser.isAuthenticated === null
-    ) {
-      props.navigation.navigate('Login');
-    }
+  useFocusEffect(
+    useCallback(() => {
+      if (
+        context.stateUser.isAuthenticated === false ||
+        context.stateUser.isAuthenticated === null
+      ) {
+        props.navigation.navigate('Login');
+      }
 
-    if (context.stateUser.isAuthenticated) {
-      AsyncStorage.getItem('jwt')
-        .then((res) => {
-          axios
-            .get(`${baseURL}users/${context.stateUser.user.userId}`, {
-              headers: { Authorization: `Bearer ${res}` },
-            })
-            .then((user) => setUserProfile(user.data));
+      if (context.stateUser.isAuthenticated) {
+        AsyncStorage.getItem('jwt')
+          .then((res) => {
+            axios
+              .get(`${baseURL}users/${context.stateUser.user.userId}`, {
+                headers: { Authorization: `Bearer ${res}` },
+              })
+              .then((user) => setUserProfile(user.data));
+          })
+          .catch((error) => console.log(error));
+      }
+
+      axios
+        .get(`${baseURL}orders`)
+        .then((x) => {
+          const data = x.data;
+          const userOrders = data.filter(
+            (order) => order.user._id === context.stateUser.user.userId
+          );
+          setOrders(userOrders);
         })
         .catch((error) => console.log(error));
-    }
 
-    return () => {
-      setUserProfile();
-    };
-  }, [context.stateUser.isAuthenticated]);
+      return () => {
+        setUserProfile();
+      };
+    }, [context.stateUser.isAuthenticated])
+  );
 
   const handleSignOut = () => {
     AsyncStorage.removeItem('jwt');
@@ -61,6 +77,20 @@ const UserProfile = (props) => {
         </View>
         <View style={{ marginTop: 80 }}>
           <Button title={'Sign Out'} onPress={handleSignOut} />
+        </View>
+        <View>
+          <Text style={{ fontSize: 20, marginTop: 30, alignSelf: 'center' }}>
+            My Orders
+          </Text>
+          <View>
+            {orders ? (
+              orders.map((x) => {
+                return <OrderCard key={x.id} {...x} />;
+              })
+            ) : (
+              <Text>You have no orders</Text>
+            )}
+          </View>
         </View>
       </ScrollView>
     </View>

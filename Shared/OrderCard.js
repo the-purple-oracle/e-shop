@@ -23,6 +23,12 @@ const OrderCard = (props) => {
   const [cardColor, setCardColor] = useState();
 
   useEffect(() => {
+    AsyncStorage.getItem('jwt')
+      .then((res) => {
+        setToken(res);
+      })
+      .catch((error) => console.log(error));
+
     if (props.status == '3') {
       setOrderStatus(<TrafficLight unavailable></TrafficLight>);
       setStatusText('Pending');
@@ -41,8 +47,56 @@ const OrderCard = (props) => {
       setOrderStatus();
       setStatusText();
       setCardColor();
+      setToken();
     };
   }, []);
+
+  const updateOrder = () => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const order = {
+      city: props.city,
+      country: props.country,
+      dateOrdered: props.dateOrdered,
+      id: props.id,
+      orderItems: props.orderItems,
+      phone: props.phone,
+      shippingAddress1: props.shippingAddress1,
+      shippingAddress2: props.shippingAddress2,
+      status: statusChange,
+      totalPrice: props.totalPrice,
+      user: props.user,
+      zip: props.zip,
+    };
+
+    axios
+      .put(`${baseURL}orders/${props.id}`, order, config)
+      .then((res) => {
+        if (res.status == 200 || res.status == 201) {
+          Toast.show({
+            topOffset: 60,
+            type: 'success',
+            text1: 'Status Updated',
+            text2: '',
+          });
+          setTimeout(() => {
+            props.navigation.navigate('Products');
+          }, 500);
+        }
+      })
+      .catch((error) => {
+        Toast.show({
+          topOffset: 60,
+          type: 'error',
+          text1: 'Something went wrong',
+          text2: 'Try again later',
+        });
+      });
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: cardColor }]}>
@@ -64,24 +118,28 @@ const OrderCard = (props) => {
         <Text>Price: </Text>
         <Text style={styles.price}>$ {props.totalPrice}</Text>
       </View>
-      <View style={{ flexDirection: 'row', position: 'relative' }}>
-        <View style={styles.picker}>
-          <RNPickerSelect
-            placeholder={{ label: 'Change Status', value: null }}
-            onValueChange={(value) => setStatusChange(value)}
-            items={[
-              { label: 'Pending', value: '3' },
-              { label: 'Shipped', value: '2' },
-              { label: 'Delivered', value: '1' },
-            ]}
-          />
+      {props.editMode && (
+        <View style={{ flexDirection: 'row', position: 'relative' }}>
+          <View style={styles.picker}>
+            <RNPickerSelect
+              placeholder={{ label: 'Change Status', value: null }}
+              onValueChange={(value) => setStatusChange(value)}
+              items={[
+                { label: 'Pending', value: '3' },
+                { label: 'Shipped', value: '2' },
+                { label: 'Delivered', value: '1' },
+              ]}
+            />
+          </View>
+          <View style={{ right: 0, justifyContent: 'center' }}>
+            <StyledButton secondary medium onPress={() => updateOrder()}>
+              <Text style={{ alignSelf: 'center', color: 'white' }}>
+                Update
+              </Text>
+            </StyledButton>
+          </View>
         </View>
-        <View style={{ right: 0, justifyContent: 'center' }}>
-          <StyledButton secondary medium>
-            <Text style={{ alignSelf: 'center', color: 'white' }}>Update</Text>
-          </StyledButton>
-        </View>
-      </View>
+      )}
     </View>
   );
 };
