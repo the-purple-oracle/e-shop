@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+
+import StyledButton from '../../../Shared/StyledComponents/StyledButton';
+
 const methods = [{ name: 'Card Payment', value: 1 }];
 
 const paymentCards = [
@@ -26,18 +29,30 @@ const Payment = (props) => {
         />
       </View>
       <View style={{ marginTop: 60, alignSelf: 'center' }}>
-        <Button
-          title={'Confirm'}
+        <StyledButton
+          large
+          secondary
           onPress={() => {
             props.navigation.navigate('Confirm', { order });
           }}
-        />
+        >
+          <Text
+            style={{
+              alignSelf: 'center',
+              color: 'white',
+              fontWeight: 'bold',
+            }}
+          >
+            Submit
+          </Text>
+        </StyledButton>
       </View>
     </View>
   );
 };
 const styles = StyleSheet.create({
   paymentContainer: {
+    marginTop: 30,
     justifyContent: 'center',
     alignItems: 'center',
   },

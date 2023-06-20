@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Image,
-  Button,
-} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { connect } from 'react-redux';
 import * as actions from '../../Redux/Actions/cartActions';
@@ -22,7 +15,7 @@ const ProductCard = (props) => {
       <View style={styles.card}>
         <Image
           style={styles.image}
-          resizeMode='scale'
+          resizeMode='contain'
           source={{
             uri: image
               ? image

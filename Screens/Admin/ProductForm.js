@@ -106,10 +106,6 @@ const ProductForm = (props) => {
     }
   };
 
-  //moved to useEffect
-  //used for the image source for base65 image
-  // var baseImage = `data:image/png;base64,${mainImage}`;
-
   const addProduct = () => {
     if (
       name === '' ||

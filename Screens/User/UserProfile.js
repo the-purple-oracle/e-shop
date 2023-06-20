@@ -8,7 +8,7 @@ import baseURL from '../../assets/common/baseUrl';
 
 import AuthGlobal from '../../Context/store/AuthGlobal';
 import { logoutUser } from '../../Context/actions/Auth.actions';
-
+import StyledButton from '../../Shared/StyledComponents/StyledButton';
 import OrderCard from '../../Shared/OrderCard';
 
 const UserProfile = (props) => {
@@ -71,15 +71,30 @@ const UserProfile = (props) => {
           </Text>
         </View>
         <View style={{ marginTop: 20 }}>
-          <Text style={{ margin: 10 }}>
-            Phone: {userProfile ? userProfile.phone : ''}
-          </Text>
+          <Text>Phone: {userProfile ? userProfile.phone : ''}</Text>
         </View>
-        <View style={{ marginTop: 80 }}>
-          <Button title={'Sign Out'} onPress={handleSignOut} />
+        <View style={{ marginTop: 30 }}>
+          <StyledButton secondary large onPress={handleSignOut}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              Sign Out
+            </Text>
+          </StyledButton>
         </View>
         <View>
-          <Text style={{ fontSize: 20, marginTop: 30, alignSelf: 'center' }}>
+          <Text
+            style={{
+              fontSize: 20,
+              marginBottom: 20,
+              marginTop: 30,
+              alignSelf: 'center',
+            }}
+          >
             My Orders
           </Text>
           <View>

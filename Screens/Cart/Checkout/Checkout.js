@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
-// import { Picker as P } from '@reacrt-native-picker/picker';
 import Icon from 'react-native-vector-icons';
 import FormContainer from '../../../Shared/Form/FormContainer';
 import Input from '../../../Shared/Form/Input';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import RNPickerSelect from 'react-native-picker-select';
+import StyledButton from '../../../Shared/StyledComponents/StyledButton';
 import { connect } from 'react-redux';
 
 const countries = require('../../../assets/countries.json');
@@ -39,7 +39,6 @@ const Checkout = (props) => {
       shippingAddress1: address,
       shippingAddress2: address2,
       status: '3',
-      // user,
       zip,
     };
 
@@ -99,7 +98,17 @@ const Checkout = (props) => {
           />
         </View>
         <View style={{ width: '80%', alignItems: 'center' }}>
-          <Button title={'Submit'} onPress={() => checkOut()} />
+          <StyledButton large secondary onPress={() => checkOut()}>
+            <Text
+              style={{
+                alignSelf: 'center',
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              Submit
+            </Text>
+          </StyledButton>
         </View>
       </FormContainer>
     </KeyboardAwareScrollView>

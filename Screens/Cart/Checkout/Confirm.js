@@ -41,7 +41,6 @@ const Confirm = (props) => {
   const confirmOrder = () => {
     const order = finalOrder.order.order;
     order.user = user;
-    console.log(order);
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -90,33 +89,37 @@ const Confirm = (props) => {
               <Text>Country: {finalOrder.order.order.country}</Text>
             </View>
             <View style={styles.lineBreak}></View>
-            <Text style={styles.title}>Items:</Text>
+            <Text style={styles.title}>Items</Text>
+            <View style={styles.lineBreak}></View>
             {finalOrder.order.order.orderItems.map((item, i) => {
               return (
-                <ListItem key={i} style={styles.listItem}>
-                  <Image
-                    style={styles.image}
-                    source={{
-                      uri: item.product.image
-                        ? item.product.image
-                        : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
-                    }}
-                  />
+                <>
+                  <ListItem key={i} style={styles.listItem}>
+                    <Image
+                      style={styles.image}
+                      source={{
+                        uri: item.product.image
+                          ? item.product.image
+                          : 'https://cdn.pixabay.com/photo/2012/04/01/17/29/box-23649_960_720.png',
+                      }}
+                    />
 
-                  <View View style={styles.body}>
-                    <View style={styles.left}>
-                      <Text>{item.product.name}</Text>
+                    <View View style={styles.body}>
+                      <View style={styles.left}>
+                        <Text>{item.product.name}</Text>
+                      </View>
+                      <View style={styles.right}>
+                        <Text>${item.product.price}</Text>
+                      </View>
                     </View>
-                    <View style={styles.right}>
-                      <Text>${item.product.price}</Text>
-                    </View>
-                  </View>
-                </ListItem>
+                  </ListItem>
+                  <View style={styles.lineBreak}></View>
+                </>
               );
             })}
           </View>
         ) : null}
-        <View style={styles.lineBreak}></View>
+
         <View style={{ alignItems: 'center', margin: 20 }}>
           <StyledButton large primary onPress={confirmOrder}>
             <Text
@@ -183,7 +186,7 @@ const styles = StyleSheet.create({
   lineBreak: {
     height: 2,
     borderTopWidth: 2,
-    borderTopColor: 'black',
+    borderTopColor: 'gainsboro',
     width: width,
   },
 });

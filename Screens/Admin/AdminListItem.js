@@ -4,17 +4,15 @@ import {
   StyleSheet,
   Text,
   Image,
-  TouchableHighLight,
   TouchableOpacity,
   Dimensions,
-  Button,
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 import StyledButton from '../../Shared/StyledComponents/StyledButton';
 
-var { width, height } = Dimensions.get('window');
+var { width } = Dimensions.get('window');
 
 const AdminListItem = (props) => {
   const [modalVisible, setModalVisible] = useState(false);
